@@ -3,23 +3,43 @@ from django.contrib import auth
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Todo
+import requests
+import json
 
 # Main routes
 def index(request):
+    todos = Todo.objects.all().order_by('text')
+    users = User.objects.all()
+
+    r = requests.get('http://quotesondesign.com/wp-json/posts?filter%5Borderby%5D=rand&filter%5Bposts_per_page%5D=1&callback=')
+    quote = json.loads(r.text)
+
     if request.method == 'GET':
         # return HttpResponse('index GET')
-
-        todos = Todo.objects.all().order_by('text')
-        users = User.objects.all()
-        return render(request, 'todoapp/index.html', {'todos': todos, 'users': users})
+        return render(request, 'todoapp/index.html', {'todos': todos, 'users': users, 'quote': quote[0]})
     elif request.method == 'POST':
-        return HttpResponse('index POST')
+        try: # if this thing is true there is no error
+            user_id = request.POST['userid']
+        except (KeyError): #if there is an error catch it here
+            return render(request, 'todoapp/index.html', {'error': 'You must select an owner', 'users': users, 'todos': todos})
+        else: # if no error, run this code
+            new_todo = Todo()
+            new_todo.text = request.POST['text']
+            new_todo.user = User.objects.get(pk=user_id)
+            new_todo.save()
+            return redirect('index')
+
 
 def delete(request, todo_id):
-    return HttpResponse("Delete this")
+    item = Todo.objects.get(id=todo_id)
+    item.delete()
+    return redirect('index')
 
 def done(request, todo_id):
-    return HttpResponse("Mark done")
+    item = Todo.objects.get(id=todo_id)
+    item.is_complete = True
+    item.save()
+    return redirect('index')
 
 # Auth-related routes
 def signup(request):
