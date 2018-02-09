@@ -8,4 +8,36 @@
   {% endif %}
 
   <h1>Sign Up</h1>
+
+  <form method="POST" action="/signup">
+    {% csrf_token %}
+    <div class="form-group">
+      <div>
+        <label>First Name: </label>
+        <input placeholder="First Name" name="firstname" type="text" class="form-control" />
+      </div> 
+      <br /> 
+      <div>
+        <label>Last Name: </label>
+        <input placeholder="Last Name" name="lastname" type="text" class="form-control" />
+      </div>
+      <br />
+      <div>
+        <label>Username: </label>
+        <input placeholder="Username" name="username" type="text" class="form-control" />
+      </div>
+      <br />
+      <div>
+        <label>Password: </label>
+        <input placeholder="Password" name="password" type="password" class="form-control" />
+      </div>
+      <br />
+      <div>
+        <label>Darkest Secret: </label>
+        <input placeholder="Secret" name="secret" type="text" class="form-control" />
+      </div>
+      <br />
+      <input type="submit" value="Signup" class="btn btn-primary" >
+    </div>
+  </form>
 {% endblock %}

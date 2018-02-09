@@ -1,6 +1,63 @@
 {% extends 'todoapp/base.html' %}
 
 {% block content%}
-<h1>Home Page</h1>
+<h1 class="col-xs-12 col-md-6 col-md-offset-3">
+	{% if user.is_authenticated %}
+		{{ user.username }}'s To Do List
+	{% else %}
+		Hello Anonymous Todo List User
+	{% endif %}
+</h1>
+
+{% if error %}
+	<p class="text-danger">{{ error }}</p>
+{% endif %}
+
+<div class="row">
+	<div class="col-xs-12 col-md-6 col-md-offset-3">
+		<form action="/" method="POST">
+			{% csrf_token %}
+			<select name="userid" class="form-control">
+				{% for u in users %}
+					<option value="{{ u.id }}">
+						{{ u.username }}
+					</option>
+				{% endfor %}
+			</select>
+			<input type="text" name="text" placeholder="Enter Your To Do">
+			<input type="submit" value="Add To Do" class="btn btn-info">
+		</form>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12 col-md-6 col-md-offset-3">
+		<h2>Do the Do List</h2>
+		<table class="table table-striped">
+			<tr>
+				<th>Item</th>
+				<th>Name</th>
+				<th>Done?</th>
+				<th>Remove?</th>
+			</tr>
+			{% for t in todos %}
+				<tr>
+					<td>{{ t.text }}</td>
+					<td>{{ t.user }}</td>
+					<td>
+						{% if t.is_complete %}
+							<i class="glyphicon glyphicon-ok" />
+						{% else %}
+							<a href="{{ t.id }}/done/">Mark Done</a>
+						{% endif %}
+					</td>
+					<td>
+						<a href="{{ t.id }}/delete/">Remove</a>
+					</td>
+				</tr>
+			{% endfor %}
+		</table>
+	</div>
+</div>
 
 {% endblock %}
